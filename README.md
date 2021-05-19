@@ -1,6 +1,6 @@
 ![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
 
-Welcome USER_NAME,
+Welcome kshannn,
 
 This is the Code Institute student template for Gitpod. We have preinstalled all of the tools you need to get started. You can safely delete this README.md file, or change it for your own project. Please do read it at least once, though! It contains some important information about Gitpod and the extensions we use.
 
@@ -57,3 +57,173 @@ We continually tweak and adjust this template to help give you the best experien
 ---
 
 Happy coding!
+
+
+db.listingsAndReviews.find({},{
+    "name":1,
+    "address":1,
+    "beds":1
+}).pretty()
+
+db.listingsAndReviews.find({},{
+    "name":1,
+    "address":1,
+    "beds":1,
+    "minimum_nights":1,
+    "maximum_nights":1
+}).pretty()
+
+db.listingsAndReviews.find({},{
+    "name":1,
+    "address":1,
+    "beds":1,
+    "minimum_nights":1,
+    "maximum_nights":1
+}).pretty().limit(5)
+
+db.listingsAndReviews.find({},{
+    "name":1,
+    "address.country":1,
+}).pretty().limit(5)
+
+db.listingsAndReviews.find({
+    "beds":2
+},{
+    "name":1,
+    "beds":1,
+})
+
+db.listingsAndReviews.find({
+    "beds":2,
+    "address.country": "Brazil"
+},{
+    "name":1,
+    "beds":1,
+    "address.country":1
+}).pretty()
+
+
+
+db.listingsAndReviews.find({
+    "beds":{
+        "$gt":3
+    },
+    "address.country": "Brazil"
+},{
+    "name":1,
+    "beds":1,
+    "address.country":1
+}).pretty()
+
+db.listingsAndReviews.find({
+    "beds":{
+        "$gt":3,
+        "$lt":10
+    },
+    "address.country": "Brazil"
+},{
+    "name":1,
+    "beds":1,
+    "address.country":1
+}).pretty()
+
+db.listingsAndReviews.find({
+    "amenities":"Kitchen"
+},{
+    "name":1,
+    "amenities"
+}).pretty()
+
+
+db.listingsAndReviews.find({
+    "amenities":{
+        "$in":["TV", "Cable TV"]
+    }
+},{
+    "name":1,
+    "amenities":1
+}).pretty()
+
+
+db.listingsAndReviews.find({
+    "amenities": {
+        "$all":["Internet", "Cable TV"]
+    }
+},{
+    "name": 1,
+    "amenities": 1
+}).pretty()
+
+
+## Find documents by their ID
+use sample_mflix
+db.movies.find({
+    "_id": ObjectId("573a1390f29313caabcd4135")
+})
+
+
+## Find by date
+use sample_airbnb
+db.listingsAndReviews.find({
+    "first_review":{
+        "$gte": ISODate("2018-01-01)
+    }
+},{
+    "name":1,
+    "first_review":1
+})
+
+## Search by string patterns and to ignore case
+Find all listing that have the substring "Spacious" inside and ignore case
+
+db.listingsAndReviews.find({
+    "name":{
+        "$regex":"Spacious",
+        "$options":"i"
+    }
+},{
+    "name":1
+}).pretty()
+
+## Find all listings which name includes the pattern "apartment for x" where  x is a number
+db.listingsAndReviews.find({
+    "name":{
+        "$regex":"apartment for \[0-9]",
+        "$options":"i"
+    }
+},{
+    "name":1
+}).pretty()
+
+## Logical Operators
+
+db.listingsAndReviews.find({
+    "$or":[
+        {
+            "address.country":"Brazil"
+        },
+        {
+            "address.country":"Canada",
+            "beds":{
+                "$gte":3
+            }
+        }
+    ]
+},{
+    "address.country":1,
+    "beds":1
+})
+
+## Show all the listings not from Brazil or Canada
+
+```
+db.listingsAndReviews.find({
+    'address.country': {
+        '$not': {
+            '$in':['Brazil', 'Canada']
+        }
+    }
+},{
+    'name':1,
+    'address.country':1
+})
