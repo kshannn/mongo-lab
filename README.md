@@ -227,3 +227,193 @@ db.listingsAndReviews.find({
     'name':1,
     'address.country':1
 })
+
+
+db.animals.insert({
+    "name":"Fluffy",
+    "age":3,
+    "breed":"Golden Retriever",
+    "species":"Dog"
+})
+
+use fake_s
+db.animals.insertMany([
+    {
+        'name':'Muffin',
+        'age':10,
+        'breed':'Orange Tabby',
+        'species':'Cat'
+    },
+    {
+        'name':'Carrots',
+        'age': 2.5,
+        'breed':'Bunny',
+        'species':'Bunny'
+    }
+])
+
+db.students.insertMany([
+    {
+        "name":"Jane Doe",
+        "age": 13,
+        "subjects": ["Defense Against the Dark Arts", "Charms", "History of Magic"],
+        "date_enrolled": ISODate('2016-05-13')
+    },
+    {
+        "name":"James Verses",
+        "age": 14,
+        "subjects": ["Transfiguration", "Alchemy"],
+        "date_enrolled": ISODate('2015-06-15')
+    },
+    {
+        "name":"Jonathan Goh",
+        "age": 12,
+        "subjects": ["Divination", "Study of Ancient Runes"],
+        "date_enrolled": ISODate('2017-04-16')
+    }
+])
+
+
+## Update a document: PATCH
+
+<!-- only updates one document/or the first doc even if there are multiple docs that meets the criteria -->
+db.animals.update({
+    "_id":ObjectId("60a4c23e882d1b554ea926e1")
+},{
+    "$set":{
+        "age":4
+    }
+})
+
+## The PUT method
+
+db.animals.update({
+    "_id":ObjectId("60a4c3dd882d1b554ea926e3")
+},{
+    "name":"Carrots",
+    "age":2.5,
+    "breed":"Norwegian Forest Cat",
+    "species":"Cat"
+})
+
+db.animals.updateMany({
+    "species":"Cat"
+},{
+    "$inc":{
+        "age":1
+    }
+})
+
+#### CLASS HANDS-ON ####
+
+// Q1: Increase the age of all students by 1
+db.students.updateMany({},{
+    "$inc":{
+        "age":1
+    }
+})
+
+// Q2: Change the date enrolled of Jonathan Goh to 2018 13th May
+db.students.update({
+    "_id": ObjectId("60a4c52b882d1b554ea926e6")
+},{
+    "$set":{
+        "date_enrolled": ISODate("2018-05-13")
+    }
+})
+
+// Q3: Change the age of James Verses to 13
+db.students.update({
+    "_id":ObjectId("60a4c52b882d1b554ea926e5")
+},{
+    "$set":{
+        "age": 13
+    }
+})
+
+// Q4: Change the student with the name of "Jane Doe" to "Jane Doe Jr" and her age to 11
+db.students.update({
+    "_id":ObjectId("60a4c52b882d1b554ea926e4")
+},{
+    "name":"Jane Doe Jr",
+    "age": 11,
+    "subjects": ["Defense Against the Dark Arts", "Charms", "History of Magic"],
+    "date_enrolled": ISODate('2016-05-13')
+})
+
+## Delete documents
+
+db.students.remove({
+    "_id":ObjectId("60a4c52b882d1b554ea926e5")
+})
+
+
+## Embedded documents
+
+db.animals.insertMany([
+    {
+        'name':'Snoopy',
+        'age':2,
+        'breed':'Beagle',
+        'species':'Dog',
+        'checkups':[]
+    },
+    {
+        'name':'Garfield',
+        'age':7,
+        'breed':'Orange Tabby',
+        'species':'Cat',
+        'checkups': [
+            {
+                "_id":ObjectId(),
+                "name":"Dr. Chua",
+                "diagnosis":"Heartworms",
+                "treatment":"Steriods"
+            }
+        ]
+    }
+])
+
+## Adding a new sub-document
+
+- use $push to add new element to an array of sub-documents
+- always need to find the parent document first
+- criteria will be the parent
+
+db.animals.updateOne({
+    '_id':ObjectId('60a5c97be153b81b68fd8afc')
+},{
+    '$push': {
+        'checkups':{
+            '_id': ObjectId(),
+            'name': 'Dr Tan',
+            'diagnosis':'Diabetes',
+            'treatment':'Medication'
+        }
+    }
+})
+
+## Updating a sub document
+1. We must select the parent document
+2. Then select the sub-document
+
+
+// $set will from the p.o.v from main document
+// $ - refers to whichever element matches ($elemMatch)
+```
+/* Find the document where it has inside the checkups array, an embedded
+document with the specified ID */
+
+db.animals.update({
+    'checkups': {
+        '$elemMatch': {
+            '_id': ObjectId('60a5c97be153b81b68fd8afb')
+        }
+    }
+}, {
+    '$set':{
+        'checkups.$.name':'Dr Su',
+        'checkups.$.diagnosis':'Diaherra',
+        'checkups.$.date':ISODate()
+    }
+})
